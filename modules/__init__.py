@@ -1,0 +1,1 @@
+from .zyte_wrapper import ScrapinghubClientWrapper

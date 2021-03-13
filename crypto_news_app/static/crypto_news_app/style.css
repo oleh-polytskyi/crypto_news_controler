@@ -1,0 +1,40 @@
+#container {
+    display: flex;
+    justify-content: space-around;
+    /* Can be changed in the live sample */
+    align-items: center;
+}
+
+#container>div {
+    width: 50%;
+    height: 30%;
+    background: green;
+    flex-shrink: 4;
+}
+
+label.error {
+    color: red;
+    font-size: 1rem;
+    display: block;
+    margin-top: 5px;
+}
+
+label.error.fail-alert {
+    border: 2px solid red;
+    border-radius: 4px;
+    line-height: 1;
+    padding: 2px 0 6px 6px;
+    background: #ffe6eb;
+}
+
+input.valid.success-alert {
+    border: 2px solid #4CAF50;
+    color: green;
+}
+
+input.error,
+textarea.error {
+    border: 1px dashed red;
+    font-weight: 300;
+    color: red;
+}

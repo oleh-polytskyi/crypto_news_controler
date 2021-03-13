@@ -1,0 +1,70 @@
+version: "3.9"
+
+services:
+  db:
+    container_name: postgres
+    volumes:
+      - /var/lib/postgresql/data
+    image: postgres
+    networks:
+      - main
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web:
+    container_name: web
+    build: .
+    command: sh -c "python manage.py collectstatic --no-input && python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    restart: on-failure
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - main
+    stdin_open: true
+    tty: true
+
+  redis:
+    image: redis:5.0.3-alpine
+    volumes:
+      - .:/code
+    restart: on-failure
+    ports:
+      - '5672:6379'
+    networks:
+      - main
+  celery:
+    build: .
+    restart: on-failure
+    env_file: .env
+    command: celery -A crypto_news worker -l info
+    volumes:
+      - .:/code
+    depends_on:
+      - web
+      - db
+      - redis
+    networks:
+      - main
+  celery_beat:
+    build: .
+    command: sh -c "celery -A crypto_news beat -l info -S django --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    container_name: celery_beat
+    depends_on:
+      - web
+      - db
+      - redis
+    hostname: celery_beat
+    env_file: .env
+    volumes:
+      - .:/code
+    networks:
+      - main
+    restart: on-failure
+
+networks:
+  main:
