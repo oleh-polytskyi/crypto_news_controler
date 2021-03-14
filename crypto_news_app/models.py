@@ -4,7 +4,7 @@ from django.db import models
 class NewsItem(models.Model):
     main_url = models.URLField()
     name_of_group = models.CharField(max_length=200)
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, unique=True)
     authors = models.CharField(max_length=200)
     date = models.DateTimeField()
     text = models.TextField()

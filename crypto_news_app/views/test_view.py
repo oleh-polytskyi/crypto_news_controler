@@ -26,20 +26,34 @@ class RunSaveJobsView(View):
 
 
 def ajaxsave(request):
-    print(request.POST)
-    schedule, _ = CrontabSchedule.objects.get_or_create(
-        minute=request.POST.get('minute'),
-        hour=request.POST.get('hour'),
-        day_of_week=request.POST.get('day_of_week')
-    )
+    schedule_tmp = {}
+    if request.POST.get('minute'):
+        schedule_tmp['minute'] = request.POST.get('minute')
+    else:
+        schedule_tmp['minute']='*'
+    if request.POST.get('hour'):
+        schedule_tmp['hour'] = request.POST.get('hour')
+    else:
+        schedule_tmp['hour'] = '*'
+    if request.POST.get('day_of_week'):
+        schedule_tmp['day_of_week'] = request.POST.get('day_of_week')
+    else:
+        schedule_tmp['day_of_week'] = '*'
 
+    schedule, _ = CrontabSchedule.objects.get_or_create(
+        minute=schedule_tmp['minute'],
+        hour=schedule_tmp['hour'],
+        day_of_week=schedule_tmp['day_of_week'],
+        day_of_month = '*',
+        month_of_year = '*'
+    )
     for spider in dict(request.POST)['spiders[]']:
         try:
             PeriodicTask.objects.update_or_create(
                 crontab=schedule,
                 name='run_spider_' + spider,
                 task='crypto_news_app.tasks.run_spider_task',
-                args=[spider]
+                args=json.dumps([spider])
             )
         except ValidationError:
             task = PeriodicTask.objects.get(name="run_spider_" + spider)
@@ -50,7 +64,7 @@ def ajaxsave(request):
                 crontab=schedule,
                 name='save_items_' + spider,
                 task='crypto_news_app.tasks.write_items_to_db',
-                args=[spider]
+                args=json.dumps([spider])
             )
         except ValidationError:
             task = PeriodicTask.objects.get(name='save_items_' + spider)

@@ -4,18 +4,19 @@ from .models import NewsItem
 
 
 @celery_app.task
-def run_spider_task(spider):
+def run_spider_task(*args):
     scrapy_client = ScrapinghubClientWrapper()
-    scrapy_client.create_job(spider)
+    scrapy_client.create_job(args[0])
 
 
 @celery_app.task
-def write_items_to_db(spider):
+def write_items_to_db(*args):
+    print(args)
     while True:
         scrapy_client = ScrapinghubClientWrapper()
-        if list(scrapy_client.project.spiders.get(spider).jobs.iter_last()
+        if list(scrapy_client.project.spiders.get(args[0]).jobs.iter_last()
                 )[0]['state'] == 'finished':
-            job_key = list(scrapy_client.project.spiders.get(spider)
+            job_key = list(scrapy_client.project.spiders.get(args[0])
                            .jobs.iter_last())[0]['key']
             items = scrapy_client.get_job_items(job_key)
             if items:
