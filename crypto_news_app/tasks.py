@@ -1,7 +1,6 @@
-from crypto_news.celery_app import app as celery_app
+from crypto_news_app.celery_app import app as celery_app
 from modules import ScrapinghubClientWrapper
 from .models import NewsItem
-from celery.schedules import crontab
 
 
 @celery_app.task

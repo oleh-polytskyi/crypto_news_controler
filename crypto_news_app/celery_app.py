@@ -5,6 +5,7 @@ from celery import Celery
 # Set default Django settings
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'crypto_news.settings')
 
-app = Celery('crypto_news')
+app = Celery('crypto_news_app')
 app.config_from_object('django.conf:settings', namespace='CELERY')
+
 app.autodiscover_tasks()

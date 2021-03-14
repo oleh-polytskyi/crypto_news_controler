@@ -41,7 +41,7 @@ services:
     build: .
     restart: on-failure
     env_file: .env
-    command: celery -A crypto_news worker -l info
+    command: celery -A crypto_news_app worker -l info
     volumes:
       - .:/code
     depends_on:
@@ -52,12 +52,13 @@ services:
       - main
   celery_beat:
     build: .
-    command: sh -c "celery -A crypto_news beat -l info -S django --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    command: celery -A crypto_news_app beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
     container_name: celery_beat
     depends_on:
       - web
       - db
       - redis
+      - celery
     hostname: celery_beat
     env_file: .env
     volumes:

@@ -39,7 +39,7 @@ def ajaxsave(request):
                 crontab=schedule,
                 name='run_spider_' + spider,
                 task='crypto_news_app.tasks.run_spider_task',
-                args=spider
+                args=[spider]
             )
         except ValidationError:
             task = PeriodicTask.objects.get(name="run_spider_" + spider)
@@ -50,7 +50,7 @@ def ajaxsave(request):
                 crontab=schedule,
                 name='save_items_' + spider,
                 task='crypto_news_app.tasks.write_items_to_db',
-                args=spider
+                args=[spider]
             )
         except ValidationError:
             task = PeriodicTask.objects.get(name='save_items_' + spider)

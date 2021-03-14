@@ -131,3 +131,4 @@ STATIC_ROOT = '/static'
 
 CELERY_BROKER_URL = 'redis://redis:6379'
 CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BEAT_SCHEDULE = {}
