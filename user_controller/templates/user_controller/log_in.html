@@ -1,0 +1,44 @@
+{% extends "crypto_news_app/base.html"%}
+
+{% block nav_bar %}
+{% endblock%}
+
+{% block content %}
+
+  <form action="{% url 'user_controller:log_in' %}" method="post">
+      {% csrf_token %}
+      
+      {% for field in form %}
+        <div class="row justify-content-md-center">
+          <div class="col col-lg-3">
+
+            {{ field.label_tag }}
+
+            {{ field }}
+          </div>
+        </div>
+      {% endfor %}
+      <div class="row justify-content-md-center">
+        <div class="col col-lg-3">
+          <button type="submit" class="btn btn-primary">Log in</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+<script>
+window.onload = (event) => {
+  labels = document.getElementsByTagName('label')
+  inpPass = document.getElementsByName('password')
+  inpName = document.getElementsByName('username')
+  inpName[0].classList.add('form-control')
+  inpPass[0].classList.add('form-control')
+
+  for (i = labels.length-1; i>-1; i--){
+    labels[i].classList.add('form-label')
+  }
+ 
+};
+</script>
+{% endblock content %}
+

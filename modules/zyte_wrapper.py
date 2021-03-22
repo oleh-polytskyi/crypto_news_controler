@@ -20,3 +20,21 @@ class ScrapinghubClientWrapper:
     def get_list_of_jobs_for_spider(self, spider):
         return [job['key']
                 for job in self.project.spiders.get(spider).jobs.iter()]
+
+    def get_spider_data(self):
+        res = {}
+        spiders_list = self.project.spiders.list()
+        for spider in spiders_list:
+            spider_obj = self.project.spiders.get(spider['id'])
+            res[spider['id']] = []
+            for job in spider_obj.jobs.iter():
+                job_info = {}
+                try:
+                    job_info['items'] = job['items']
+                except KeyError:
+                    job_info['items'] = '0'
+                job_info['key'] = job['key']
+                job_info['state'] = job['state']
+                job_info['errors'] = job['errors']
+                res[spider['id']].append(job_info)
+        return res
