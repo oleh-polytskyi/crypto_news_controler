@@ -40,8 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crypto_news_app.apps.CryptoNewsAppConfig',
+    'user_controller.apps.UserControllerConfig',
     'django_celery_results',
     'django_celery_beat',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -132,3 +134,19 @@ STATIC_ROOT = '/static'
 CELERY_BROKER_URL = 'redis://redis:6379'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BEAT_SCHEDULE = {}
+CELERY_TASK_SERIALIZER = 'json'
+
+
+ASGI_APPLICATION = 'crypto_news.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('redis', 6379)],
+            "symmetric_encryption_keys": [SECRET_KEY],
+        },
+    },
+}
+
+LOGIN_REDIRECT_URL = 'crypto_news_app:run_save_jobs'
+LOGOUT_REDIRECT_URL = 'user_controller:log_in'

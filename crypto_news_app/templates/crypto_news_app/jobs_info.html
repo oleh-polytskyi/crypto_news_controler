@@ -1,0 +1,96 @@
+{% extends "crypto_news_app/base.html" %}
+
+{% block head_ext %}
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.min.js"></script>
+
+{% endblock %}
+{% include "crypto_news_app/nav_bar.html" %}
+
+{% block content %}
+  <div class="container-md">
+   
+  </div>
+    
+  </div>
+  <script>
+    const socket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/spider_info/'
+        );
+    socket.addEventListener('open', function (event) {
+        socket.send({'ds':'111'});
+        
+        var container = document.getElementsByClassName('container-md')
+        let spiner = document.createElement('div')
+        spiner.classList.add('spinner-border');
+        spiner.setAttribute('role', 'status');
+        spiner.setAttribute('id', 'spiner');
+        let spinerSpan = document.createElement('sapan')
+        spinerSpan.classList.add('visually-hidden')
+        spiner.appendChild(spinerSpan)
+        container[0].appendChild(spiner)
+    });
+
+    socket.addEventListener('message', function (event) {
+      var data = JSON.parse(event.data);
+
+      create_cards(data)
+     
+    });
+
+    function create_cards(data){
+      var container = document.getElementsByClassName('container-md')
+      for (var i in data){
+        let card =  document.createElement("div");
+        card.classList.add('card');
+        let cardHead = document.createElement("div");
+        cardHead.className='card-header';
+        card_header_text = document.createTextNode(i)
+        cardHead.appendChild(card_header_text)
+        let cardBody = document.createElement("div");
+        cardBody.classList.add('card-body');
+        let overflow = document.createElement("div");
+        overflow.classList.add('overflow-auto');
+        overflow.setAttribute('style', 'max-height:300px');
+        let tbl = document.createElement("table");
+        tbl.classList.add('table');
+        let tblHead = document.createElement("thead");
+        let tblBody = document.createElement("tbody");
+        reversedList = data[i].reverse()
+        let row_head = document.createElement("tr");
+        for (key in Object.keys(reversedList[0])){
+          let cell = document.createElement("td");
+          let cellText = document.createTextNode(Object.keys(reversedList[0])[key]);
+          cell.appendChild(cellText);
+          row_head.appendChild(cell);
+        }
+        tblHead.appendChild(row_head)
+        for(var j in reversedList){
+          let row = document.createElement("tr");
+          for (k in reversedList[j]){
+            let cell = document.createElement("td");
+            let cellText = document.createTextNode(reversedList[j][k]);
+            cell.appendChild(cellText);
+            row.appendChild(cell);
+          }
+          tblBody.appendChild(row);
+        }
+        tbl.appendChild(tblHead);
+        tbl.appendChild(tblBody);
+        overflow.appendChild(tbl);
+        cardBody.appendChild(overflow);
+        card.appendChild(cardHead);
+        card.appendChild(cardBody);
+        
+        container[0].appendChild(card);
+      }
+      let spiner = document.getElementById('spiner')
+      spiner.remove()
+    }
+    window.onbeforeunload = function() {
+      websocket.onclose = function () {}; 
+      websocket.close();
+    };
+  </script>
+{% endblock %}

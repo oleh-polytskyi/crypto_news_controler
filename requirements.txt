@@ -5,4 +5,6 @@ django-celery-results==2.0.1
 redis==3.5.3
 scrapinghub==2.3.1
 python-dotenv==0.15.0
-django_celery_beat
+django_celery_beat==2.2.0
+channels==3.0.3
+channels_redis==3.2.0

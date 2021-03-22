@@ -17,6 +17,11 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('', include('crypto_news_app.urls',)),
+    path('jobs/', include(('crypto_news_app.urls', 'crypto_news_app'),
+         namespace='crypto_news_app'
+                          )),
+    path('user/', include(('user_controller.urls', 'user_controller'),
+         namespace='user_controller'
+                          )),
     path('admin/', admin.site.urls),
 ]

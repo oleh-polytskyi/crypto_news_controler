@@ -1,6 +1,28 @@
 from crypto_news_app.celery_app import app as celery_app
 from modules import ScrapinghubClientWrapper
 from .models import NewsItem
+import time
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+
+@celery_app.task()
+def update_spiders_data(channel_name):
+    spider_dict = ScrapinghubClientWrapper().get_spider_data()
+    while True:
+        new_spider_dict = ScrapinghubClientWrapper().get_spider_data()
+        if new_spider_dict == spider_dict:
+            time.sleep(15)
+            continue
+        else:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.send)(channel_name,
+                                              {"type": "chat.message",
+                                               "text": new_spider_dict},
+                                              )
+            spider_dict = new_spider_dict
+            time.sleep(15)
+    return {'status': 'finished'}
 
 
 @celery_app.task
@@ -11,7 +33,6 @@ def run_spider_task(*args):
 
 @celery_app.task
 def write_items_to_db(*args):
-    print(args)
     while True:
         scrapy_client = ScrapinghubClientWrapper()
         if list(scrapy_client.project.spiders.get(args[0]).jobs.iter_last()

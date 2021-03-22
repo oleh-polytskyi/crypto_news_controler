@@ -1,2 +1,3 @@
-from .test_view import RunSaveJobsView
-from .test_view import ajaxsave
+from .run_save_jobs_view import RunSaveJobsView, ajaxsave
+from .jobs_info_view import JobsInfoView
+
