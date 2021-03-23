@@ -148,5 +148,12 @@ CHANNEL_LAYERS = {
     },
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': 'cache:11211',
+    }
+}
+
 LOGIN_REDIRECT_URL = 'crypto_news_app:run_save_jobs'
 LOGOUT_REDIRECT_URL = 'user_controller:log_in'

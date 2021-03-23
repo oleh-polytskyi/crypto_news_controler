@@ -8,10 +8,37 @@
 
 {% block content %}
   <div class="container-md">
-   
+  {% for spider, jobs in context.items %}
+    <div class="card" id={{spider}} >
+      <div class="card-header">
+        {{spider}}
+      </div>
+      <div class="card-body">
+        <div class="overflow-auto" style="max-height:300px">
+          <table class="table">
+            <thead>
+              <tr> 
+                {% for key in jobs.0.keys %}
+                  <td>{{key}}</td>
+                {% endfor %}
+              <tr> 
+            </thead>
+            <tbody>
+              {% for job in  jobs %}
+                <tr> 
+                  {% for value in job.values %}
+                    <td>{{value}}</td>
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
   </div>
-    
+   {% endfor %}
   </div>
+ 
   <script>
     const socket = new WebSocket(
             'ws://'
@@ -20,16 +47,6 @@
         );
     socket.addEventListener('open', function (event) {
         socket.send({'ds':'111'});
-        
-        var container = document.getElementsByClassName('container-md')
-        let spiner = document.createElement('div')
-        spiner.classList.add('spinner-border');
-        spiner.setAttribute('role', 'status');
-        spiner.setAttribute('id', 'spiner');
-        let spinerSpan = document.createElement('sapan')
-        spinerSpan.classList.add('visually-hidden')
-        spiner.appendChild(spinerSpan)
-        container[0].appendChild(spiner)
     });
 
     socket.addEventListener('message', function (event) {
@@ -39,11 +56,10 @@
      
     });
 
+ 
     function create_cards(data){
-      var container = document.getElementsByClassName('container-md')
       for (var i in data){
-        let card =  document.createElement("div");
-        card.classList.add('card');
+        let card =  document.getElementById(i);
         let cardHead = document.createElement("div");
         cardHead.className='card-header';
         card_header_text = document.createTextNode(i)
@@ -80,17 +96,14 @@
         tbl.appendChild(tblBody);
         overflow.appendChild(tbl);
         cardBody.appendChild(overflow);
-        card.appendChild(cardHead);
-        card.appendChild(cardBody);
-        
-        container[0].appendChild(card);
+        card.innerHTML = ""
+        card.appendChild(cardBody)
+        card.appendChild(cardHead)
       }
-      let spiner = document.getElementById('spiner')
-      spiner.remove()
     }
-    window.onbeforeunload = function() {
-      websocket.onclose = function () {}; 
-      websocket.close();
+  window.onbeforeunload = function() {
+      socket.onclose = function () {}; 
+      socket.close();
     };
   </script>
 {% endblock %}

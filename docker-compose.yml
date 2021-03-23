@@ -81,6 +81,12 @@ services:
       - "5050:80"
     networks:
       - main
-
+  cache:
+    image: memcached
+    ports:
+      - "11211:11211"
+    entrypoint:
+      - memcached
+      - -m 64
 networks:
   main:
