@@ -4,11 +4,13 @@ from .models import NewsItem
 import time
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.core.cache import cache
 
 
 @celery_app.task()
 def update_spiders_data(channel_name):
-    spider_dict = ScrapinghubClientWrapper().get_spider_data()
+
+    spider_dict = cache.get('spiders_info')
     while True:
         new_spider_dict = ScrapinghubClientWrapper().get_spider_data()
         if new_spider_dict == spider_dict:
@@ -20,7 +22,7 @@ def update_spiders_data(channel_name):
                                               {"type": "chat.message",
                                                "text": new_spider_dict},
                                               )
-            spider_dict = new_spider_dict
+            cache.set('spiders_info', new_spider_dict, 600)
             time.sleep(15)
     return {'status': 'finished'}
 

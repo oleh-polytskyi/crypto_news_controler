@@ -29,11 +29,11 @@ class ScrapinghubClientWrapper:
             res[spider['id']] = []
             for job in spider_obj.jobs.iter():
                 job_info = {}
+                job_info['key'] = job['key']
                 try:
                     job_info['items'] = job['items']
                 except KeyError:
                     job_info['items'] = '0'
-                job_info['key'] = job['key']
                 job_info['state'] = job['state']
                 job_info['errors'] = job['errors']
                 res[spider['id']].append(job_info)
